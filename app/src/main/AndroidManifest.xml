@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.github.yeeun_yun97.toy.imagekeyboard">
 
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.ImageKeyboard"
         tools:targetApi="31">
         <activity
@@ -24,7 +25,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="ImageKeyboard"
+            android:name=".MyKeyboard"
             android:exported="true"
             android:label="imageKeyboard"
             android:permission="android.permission.BIND_INPUT_METHOD">
@@ -35,7 +36,14 @@
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.github.yeeun_yun97.toy.imagekeyboard.inputcontent"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
-
-
 </manifest>
