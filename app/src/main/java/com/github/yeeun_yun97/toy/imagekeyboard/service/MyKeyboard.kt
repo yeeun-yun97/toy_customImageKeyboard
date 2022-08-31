@@ -1,33 +1,88 @@
 package com.github.yeeun_yun97.toy.imagekeyboard.service
 
+import android.annotation.SuppressLint
 import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import com.bumptech.glide.Glide
+import androidx.core.view.inputmethod.EditorInfoCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.yeeun_yun97.toy.imagekeyboard.R
+import com.github.yeeun_yun97.toy.imagekeyboard.data.NaverSearchRepository
 import com.github.yeeun_yun97.toy.imagekeyboard.service.utils.SupportUtil
 import com.github.yeeun_yun97.toy.imagekeyboard.service.utils.Util
-import com.github.yeeun_yun97.toy.imagekeyboard.data.NaverSearchRepository
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 
 
-class MyKeyboard : InputMethodService() {
+class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
     private val repo = NaverSearchRepository.getInstance()
+
+    //Lifecycle Methods
+    private var lifecycleRegistry = LifecycleRegistry(this)
 
 
     override fun onCreate() {
         super.onCreate()
-        repo.loadImages()
+        Log.d("LIFECYCLE", "onCreate")
+        handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+
     }
+
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
+
+
+
+
+    private fun handleLifecycleEvent(event: Lifecycle.Event) =
+        lifecycleRegistry.handleLifecycleEvent(event)
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("LIFECYCLE", "onDestroy")
+        handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    }
+
+    private lateinit var chipGroup: ChipGroup
 
     /**
      * 인풋 뷰를 생성하기
      */
+    @SuppressLint("InflateParams")
     override fun onCreateInputView(): View {
+        val layout = layoutInflater.inflate(R.layout.keyboard_my_layout, null)
+        this.chipGroup = layout.findViewById(R.id.chipGroup)
+
+        val adapter = MIMEListAdapter(object: View.OnClickListener {
+            override fun onClick(view: View?) {
+                Log.d("~~~","onClick -${view!!.tag}")
+                Util.commitImage(view!!,currentInputConnection,currentInputEditorInfo)
+            }
+        })
+        repo.loadImages()
+        repo.imageLiveData.observeForever() { t ->
+            Log.d("alert", "adapter set to ${t.toString()}")
+            adapter.setList(t)
+        }
+
+        val recyclerView: RecyclerView = layout.findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(4, LinearLayoutManager.VERTICAL)
+        recyclerView.adapter = adapter
+        return layout
+
+
         // root layout 생성
+        /*
         val keyboardLayout =
             layoutInflater.inflate(R.layout.keyboard_layout, null) as RelativeLayout
         val imageContainer = keyboardLayout.findViewById(R.id.imageContainer) as LinearLayout
@@ -74,13 +129,31 @@ class MyKeyboard : InputMethodService() {
             }
         }
 
-        return keyboardLayout;
+        return keyboardLayout;*/
     }
 
     /**
      * 인풋뷰를 시작할 때 -> MIME type 검증
      */
     override fun onStartInputView(info: EditorInfo, restarting: Boolean) {
+
+        val supportedMimeTypes = EditorInfoCompat.getContentMimeTypes(info).toList()
+        if (this::chipGroup.isInitialized) {
+            chipGroup.removeAllViews()
+            Log.d("칩 그룹", "설정할 것 ${supportedMimeTypes.toString()}")
+            if (supportedMimeTypes.isNullOrEmpty()) {
+                val chip = Chip(chipGroup.context)
+                chip.setText("MIME 없음")
+                chipGroup.addView(chip)
+            } else
+                for (mime in supportedMimeTypes) {
+                    val chip = Chip(chipGroup.context)
+                    chip.setText(mime)
+                    chipGroup.addView(chip)
+                }
+        }
+
+
         val pngSupported = SupportUtil.isCommitContentSupported(
             this,
             currentInputConnection,
@@ -88,14 +161,14 @@ class MyKeyboard : InputMethodService() {
             "image/png",
             packageManager,
             currentInputBinding
-        );
+        )
 
         if (!pngSupported) {
 //            Toast.makeText(
 //                getApplicationContext(),
 //                "Images not supported here. Please change to another keyboard.",
 //                Toast.LENGTH_SHORT
-//            ).show();
+//            ).show()
         }
     }
 
@@ -103,5 +176,6 @@ class MyKeyboard : InputMethodService() {
      * Disable Full ScreenMode
      */
     override fun onEvaluateFullscreenMode() = false
+
 
 }
