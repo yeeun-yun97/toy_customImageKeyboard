@@ -1,4 +1,4 @@
-package com.github.yeeun_yun97.toy.imagekeyboard;
+package com.github.yeeun_yun97.toy.imagekeyboard.service;
 
 import android.app.AppOpsManager;
 import android.content.ClipDescription;
@@ -26,6 +26,8 @@ import androidx.core.content.FileProvider;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 import androidx.core.view.inputmethod.InputConnectionCompat;
 import androidx.core.view.inputmethod.InputContentInfoCompat;
+
+import com.github.yeeun_yun97.toy.imagekeyboard.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
