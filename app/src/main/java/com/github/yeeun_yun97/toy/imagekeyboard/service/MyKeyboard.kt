@@ -5,12 +5,12 @@ import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.ProgressBar
 import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -18,6 +18,7 @@ import com.github.yeeun_yun97.toy.imagekeyboard.R
 import com.github.yeeun_yun97.toy.imagekeyboard.data.NaverSearchRepository
 import com.github.yeeun_yun97.toy.imagekeyboard.service.utils.SupportUtil
 import com.github.yeeun_yun97.toy.imagekeyboard.service.utils.Util
+import com.github.yeeun_yun97.toy.imagekeyboard.ui.MIMEListAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
@@ -27,7 +28,6 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
 
     //Lifecycle Methods
     private var lifecycleRegistry = LifecycleRegistry(this)
-
 
     override fun onCreate() {
         super.onCreate()
@@ -40,9 +40,6 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
         return lifecycleRegistry
     }
 
-
-
-
     private fun handleLifecycleEvent(event: Lifecycle.Event) =
         lifecycleRegistry.handleLifecycleEvent(event)
 
@@ -54,6 +51,7 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
     }
 
     private lateinit var chipGroup: ChipGroup
+    private lateinit var progressBar : ProgressBar
 
     /**
      * 인풋 뷰를 생성하기
@@ -62,21 +60,21 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
     override fun onCreateInputView(): View {
         val layout = layoutInflater.inflate(R.layout.keyboard_my_layout, null)
         this.chipGroup = layout.findViewById(R.id.chipGroup)
-
-        val adapter = MIMEListAdapter(object: View.OnClickListener {
-            override fun onClick(view: View?) {
-                Log.d("~~~","onClick -${view!!.tag}")
-                Util.commitImage(view!!,currentInputConnection,currentInputEditorInfo)
-            }
-        })
+        this.progressBar = layout.findViewById(R.id.progressBar)
+        val adapter = MIMEListAdapter { view ->
+            Log.d("~~~", "onClick -${view!!.tag}")
+            Util.commitImage(view, currentInputConnection, currentInputEditorInfo)
+        }
         repo.loadImages()
         repo.imageLiveData.observeForever() { t ->
             Log.d("alert", "adapter set to ${t.toString()}")
+            if(t.isNullOrEmpty())progressBar.visibility = View.VISIBLE
+            else progressBar.visibility = View.INVISIBLE
             adapter.setList(t)
         }
 
         val recyclerView: RecyclerView = layout.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = StaggeredGridLayoutManager(4, LinearLayoutManager.VERTICAL)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
         return layout
 

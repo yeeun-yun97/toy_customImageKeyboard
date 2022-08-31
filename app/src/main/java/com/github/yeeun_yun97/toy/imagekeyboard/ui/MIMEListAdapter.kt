@@ -1,4 +1,4 @@
-package com.github.yeeun_yun97.toy.imagekeyboard.service
+package com.github.yeeun_yun97.toy.imagekeyboard.ui
 
 import android.view.LayoutInflater
 import android.view.View

@@ -3,18 +3,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
-    android:background="#EBEBEB"
+    android:layout_height="280dp"
     android:theme="@style/Theme.MaterialComponents.Light">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:background = "#F2F2F2"
+        android:paddingTop="5dp"
+        android:paddingBottom="2dp"
+        android:textSize="12dp"
+        android:text="supported MIME Types"
+        app:layout_constraintBottom_toTopOf="@+id/imeScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <HorizontalScrollView
         android:id="@+id/imeScrollView"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="#F2F2F2"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
@@ -25,13 +46,17 @@
     </HorizontalScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="#EBEBEB"
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="200dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imeScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/imeScrollView"
         tools:itemCount="3" />
 
     <ProgressBar
