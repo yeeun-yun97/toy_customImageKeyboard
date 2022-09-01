@@ -7,17 +7,46 @@
     android:theme="@style/Theme.MaterialComponents.Light">
 
     <TextView
+        android:id="@+id/dsBtn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:background="#5FAFFF"
+        android:paddingVertical="5dp"
+        android:text="ds"
+        app:layout_constraintBottom_toTopOf="@+id/imeScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/prefBtn"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/prefBtn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:background="#FF8888"
+        android:paddingVertical="5dp"
+        android:text="pref"
+        app:layout_constraintBottom_toTopOf="@+id/imeScrollView"
+        app:layout_constraintEnd_toStartOf="@+id/dsBtn"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="15dp"
+        android:background="#F2F2F2"
         android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:background = "#F2F2F2"
         android:paddingTop="5dp"
+        android:paddingEnd="5dp"
         android:paddingBottom="2dp"
-        android:textSize="12dp"
         android:text="supported MIME Types"
+        android:textSize="12dp"
         app:layout_constraintBottom_toTopOf="@+id/imeScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
@@ -46,10 +75,10 @@
     </HorizontalScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:background="#EBEBEB"
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="200dp"
+        android:background="#EBEBEB"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"

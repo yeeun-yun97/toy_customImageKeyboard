@@ -3,8 +3,8 @@ package com.github.yeeun_yun97.toy.imagekeyboard
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.yeeun_yun97.toy.imagekeyboard.data.ImageItem
-import com.github.yeeun_yun97.toy.imagekeyboard.data.ImageService
+import com.github.yeeun_yun97.toy.imagekeyboard.data.retrofit.ImageItem
+import com.github.yeeun_yun97.toy.imagekeyboard.data.retrofit.ImageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

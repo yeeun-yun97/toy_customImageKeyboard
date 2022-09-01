@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.yeeun_yun97.toy.imagekeyboard.R
-import com.github.yeeun_yun97.toy.imagekeyboard.data.ImageItem
+import com.github.yeeun_yun97.toy.imagekeyboard.data.retrofit.ImageItem
 
 class MIMEListAdapter(private val listener: View.OnClickListener) :
     RecyclerView.Adapter<MIMEViewHolder>() {

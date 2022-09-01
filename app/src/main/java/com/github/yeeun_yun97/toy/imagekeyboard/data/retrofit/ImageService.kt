@@ -1,4 +1,4 @@
-package com.github.yeeun_yun97.toy.imagekeyboard.data
+package com.github.yeeun_yun97.toy.imagekeyboard.data.retrofit
 
 import retrofit2.Response
 import retrofit2.Retrofit
