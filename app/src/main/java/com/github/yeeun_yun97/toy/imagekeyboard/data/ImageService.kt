@@ -24,12 +24,15 @@ interface ImageService {
         }
     }
 
-    @Headers("X-Naver-Client-Id:vC6PKe4D5hQ8DE9yEzXS", "X-Naver-Client-Secret:jCxquNgF1U")
+    @Headers(
+        "X-Naver-Client-Id:vC6PKe4D5hQ8DE9yEzXS",
+        "X-Naver-Client-Secret:jCxquNgF1U"
+    )
     @GET("v1/search/image")
     suspend fun getImages(
-        @Query("query", encoded = true) query: String= "강아지",
+        @Query("query", encoded = true) query: String = "강아지",
         @Query("start", encoded = true) start: Int = 1,
-        @Query("display", encoded = true) display: Int = 20,
+        @Query("display", encoded = true) display: Int = 100,
     ): Response<ImageResponse>
 
 }

@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -22,7 +23,6 @@ import com.github.yeeun_yun97.toy.imagekeyboard.ui.MIMEListAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
-
 class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
     private val repo = NaverSearchRepository.getInstance()
 
@@ -33,7 +33,6 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
         super.onCreate()
         Log.d("LIFECYCLE", "onCreate")
         handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-
     }
 
     override fun getLifecycle(): Lifecycle {
@@ -51,7 +50,9 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
     }
 
     private lateinit var chipGroup: ChipGroup
-    private lateinit var progressBar : ProgressBar
+    private lateinit var progressBar: ProgressBar
+
+    private var targetPackageName = "com.github.yeeun_yun97.toy.imagekeyboard"
 
     /**
      * 인풋 뷰를 생성하기
@@ -62,13 +63,20 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
         this.chipGroup = layout.findViewById(R.id.chipGroup)
         this.progressBar = layout.findViewById(R.id.progressBar)
         val adapter = MIMEListAdapter { view ->
-            Log.d("~~~", "onClick -${view!!.tag}")
-            Util.commitImage(view, currentInputConnection, currentInputEditorInfo)
+            Log.d("붙여넣기 시작", "클릭한 아이템 주소 = ${view!!.tag}")
+            Log.d("붙여넣기 시작", "붙여넣을 앱 패키지명 = $targetPackageName")
+            Util.commit(
+                currentInputConnection,
+                currentInputEditorInfo,
+                view.context,
+                view.tag.toString(),
+                targetPackageName
+            )
         }
         repo.loadImages()
         repo.imageLiveData.observeForever() { t ->
             Log.d("alert", "adapter set to ${t.toString()}")
-            if(t.isNullOrEmpty())progressBar.visibility = View.VISIBLE
+            if (t.isNullOrEmpty()) progressBar.visibility = View.VISIBLE
             else progressBar.visibility = View.INVISIBLE
             adapter.setList(t)
         }
@@ -130,18 +138,21 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
         return keyboardLayout;*/
     }
 
+
     /**
      * 인풋뷰를 시작할 때 -> MIME type 검증
      */
     override fun onStartInputView(info: EditorInfo, restarting: Boolean) {
+        targetPackageName = info.packageName
+        Log.d("타깃 앱의 패키지명", "패키지명 = ${info.packageName}")
 
         val supportedMimeTypes = EditorInfoCompat.getContentMimeTypes(info).toList()
+        Log.d("칩 그룹", "설정할 것 $supportedMimeTypes")
         if (this::chipGroup.isInitialized) {
-            chipGroup.removeAllViews()
-            Log.d("칩 그룹", "설정할 것 ${supportedMimeTypes.toString()}")
+            chipGroup.removeAllViews() //이전에 추가한 칩 모두 제거
             if (supportedMimeTypes.isNullOrEmpty()) {
                 val chip = Chip(chipGroup.context)
-                chip.setText("MIME 없음")
+                chip.setText("NONE")
                 chipGroup.addView(chip)
             } else
                 for (mime in supportedMimeTypes) {
@@ -150,7 +161,6 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
                     chipGroup.addView(chip)
                 }
         }
-
 
         val pngSupported = SupportUtil.isCommitContentSupported(
             this,
@@ -162,11 +172,11 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
         )
 
         if (!pngSupported) {
-//            Toast.makeText(
-//                getApplicationContext(),
-//                "Images not supported here. Please change to another keyboard.",
-//                Toast.LENGTH_SHORT
-//            ).show()
+            Toast.makeText(
+                applicationContext,
+                "Images not supported here. Please change to another keyboard.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -174,6 +184,5 @@ class MyKeyboard : InputMethodService(), LifecycleOwner, LifecycleObserver {
      * Disable Full ScreenMode
      */
     override fun onEvaluateFullscreenMode() = false
-
 
 }

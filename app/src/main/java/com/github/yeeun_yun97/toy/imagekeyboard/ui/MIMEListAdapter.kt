@@ -35,6 +35,14 @@ class MIMEViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView as ImageView
         imageView.setTag(item.thumbnail)
         imageView.setOnClickListener(listener)
-        Glide.with(itemView.context).load(item.thumbnail).into(imageView)
+        var url = item.thumbnail
+        if (url.startsWith("https://search.pstatic.net/common/?src="))
+            url = url.slice(item.thumbnail.indexOfFirst { it == '=' }+1..url.length-1)
+
+        Glide
+            .with(itemView.context)
+            .load(url)
+            .centerCrop()
+            .into(imageView)
     }
 }
